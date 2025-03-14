@@ -6,6 +6,11 @@ on:
         required: true
         default: '100'
         type: string
+      version:
+        description: 'Plugin Version (e.g. 2024.3.1)'
+        required: true
+        default: '2025.1.0'
+        type: string
 jobs:
   build:
     runs-on: windows-latest
@@ -23,7 +28,8 @@ jobs:
       working-directory: Backend/ReSharperPlugin
       run: |
         $wave = '${{ github.event.inputs.wave }}'
-        ./build.ps1 pack -Configuration Release -WaveVersion $wave
+        $version = '${{ github.event.inputs.version }}'
+        ./build.ps1 pack -Configuration Release -WaveVersion $wave -Version $version
       shell: pwsh
 
     - name: Upload artifact
@@ -31,3 +37,9 @@ jobs:
       with:
         name: resharper-plugin
         path: Backend/ReSharperPlugin/artifacts/Release/
+
+# to get the notification email in any case
+    - name: Build Failed Successfully
+      run: |
+        echo "💥 Task failed successfully! 💥"
+        exit 1
